@@ -4,7 +4,7 @@ const API_KEY = "AIzaSyAlR2cGYZb4mI5qoZ4G264hW3HO_L33wq8";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export const generateTourDetails = async (tourName: string) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const prompt = `
     Generate a comprehensive tour package for "${tourName}" in Zanzibar.
