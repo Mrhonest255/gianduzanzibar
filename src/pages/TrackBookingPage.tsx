@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Search, CheckCircle, Clock, XCircle, Archive, Phone, Mail, Calendar, Users, MapPin } from "lucide-react";
+import { Search, CheckCircle, Clock, XCircle, Archive, Phone, Mail, Calendar, Users, MapPin, MessageSquare, ShieldCheck } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,28 +30,28 @@ interface BookingDetails {
 
 const statusConfig = {
   pending: {
-    label: "Pending",
+    label: "PENDING REVIEW",
     icon: Clock,
-    color: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
-    description: "Your booking is being reviewed by our team.",
+    color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    description: "Our team is currently reviewing your booking request. You'll receive a confirmation shortly.",
   },
   approved: {
-    label: "Confirmed",
+    label: "CONFIRMED",
     icon: CheckCircle,
-    color: "bg-forest-green/10 text-forest-green",
-    description: "Your booking has been confirmed! We'll see you soon.",
+    color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    description: "Your adventure is confirmed! We're excited to show you the magic of Zanzibar.",
   },
   rejected: {
-    label: "Not Available",
+    label: "NOT AVAILABLE",
     icon: XCircle,
-    color: "bg-destructive/10 text-destructive",
-    description: "Unfortunately, the requested date is not available. Please contact us for alternatives.",
+    color: "bg-red-500/10 text-red-500 border-red-500/20",
+    description: "Unfortunately, the requested date is fully booked. Please contact us for alternative dates.",
   },
   archived: {
-    label: "Completed",
+    label: "COMPLETED",
     icon: Archive,
-    color: "bg-muted text-muted-foreground",
-    description: "This tour has been completed. Thank you for traveling with us!",
+    color: "bg-slate-500/10 text-slate-500 border-slate-500/20",
+    description: "This journey has concluded. We hope you enjoyed every moment with us!",
   },
 };
 
@@ -69,7 +69,7 @@ export default function TrackBookingPage() {
     if (!bookingRef.trim() || !email.trim()) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
+        title: "MISSING INFO",
         description: "Please enter both booking reference and email.",
       });
       return;
@@ -93,7 +93,7 @@ export default function TrackBookingPage() {
       if (!data) {
         toast({
           variant: "destructive",
-          title: "Booking Not Found",
+          title: "NOT FOUND",
           description: "No booking found with the provided reference and email.",
         });
       }
@@ -101,235 +101,236 @@ export default function TrackBookingPage() {
       console.error("Search error:", err);
       toast({
         variant: "destructive",
-        title: "Search Failed",
-        description: "An error occurred while searching. Please try again.",
+        title: "ERROR",
+        description: "Something went wrong. Please try again later.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const status = booking?.status as keyof typeof statusConfig || "pending";
-  const StatusIcon = statusConfig[status]?.icon || Clock;
-
   return (
     <>
       <Helmet>
         <title>Track Your Booking | {COMPANY.name}</title>
-        <meta name="description" content="Track your tour booking status with Giandu Zanzibar. Enter your booking reference to check confirmation status." />
+        <meta name="description" content="Check the status of your Zanzibar tour booking using your reference number." />
       </Helmet>
       <Layout>
-        <div className="pt-24 pb-16 bg-background min-h-screen">
-          <div className="container max-w-2xl">
+        {/* Hero Section */}
+        <section className="relative pt-48 pb-24 overflow-hidden bg-slate-950">
+          <div className="absolute inset-0 z-0">
+            <img
+              src="https://images.unsplash.com/photo-1539367628448-4bc5c9d171c8?auto=format&fit=crop&q=80"
+              alt="Track Booking"
+              className="w-full h-full object-cover opacity-30 animate-ken-burns"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950" />
+          </div>
+          
+          <div className="container relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center mb-12"
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl"
             >
-              <span className="inline-block px-4 py-1.5 rounded-full bg-ocean-light text-primary text-sm font-medium mb-4">
-                Booking Status
-              </span>
-              <h1 className="font-display text-4xl font-bold text-foreground mb-4">
-                Track Your Booking
+              <p className="text-primary-glow font-black text-xs uppercase tracking-[0.3em] mb-6">Booking Status</p>
+              <h1 className="font-display text-6xl md:text-9xl font-black text-white mb-10 leading-[0.85] tracking-tighter">
+                TRACK YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-400">JOURNEY</span>
               </h1>
-              <p className="text-muted-foreground text-lg">
-                Enter your booking reference and email to check your booking status.
+              <p className="text-slate-400 text-xl md:text-2xl font-medium max-w-2xl leading-relaxed">
+                Enter your booking reference and email address to check the current status of your reservation.
               </p>
             </motion.div>
+          </div>
+        </section>
 
-            {/* Search Form */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card className="shadow-medium">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Search className="h-5 w-5 text-primary" />
-                    Find Your Booking
-                  </CardTitle>
-                  <CardDescription>
-                    Your booking reference was provided in your confirmation email.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSearch} className="space-y-4">
-                    <div>
-                      <label htmlFor="bookingRef" className="block text-sm font-medium text-foreground mb-1.5">
-                        Booking Reference *
-                      </label>
-                      <Input
-                        id="bookingRef"
-                        placeholder="e.g., GDZ-20241223-abc12345"
-                        value={bookingRef}
-                        onChange={(e) => setBookingRef(e.target.value)}
-                        className="uppercase"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
-                        Email Address *
-                      </label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ? "Searching..." : "Track Booking"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Booking Result */}
-            {searched && booking && (
+        <section className="py-24 bg-slate-50 relative">
+          <div className="container">
+            <div className="max-w-5xl mx-auto">
+              {/* Search Form */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-8"
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="glass-morphism p-8 md:p-12 rounded-[3rem] border border-white shadow-premium mb-16"
               >
-                <Card className="shadow-medium overflow-hidden">
-                  {/* Status Header */}
-                  <div className={`p-6 ${statusConfig[status]?.color || "bg-muted"}`}>
-                    <div className="flex items-center gap-3">
-                      <StatusIcon className="h-8 w-8" />
-                      <div>
-                        <h2 className="text-xl font-bold">
-                          {statusConfig[status]?.label || "Unknown"}
-                        </h2>
-                        <p className="text-sm opacity-90">
-                          {statusConfig[status]?.description}
+                <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Booking Reference</label>
+                    <div className="relative">
+                      <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        placeholder="ZV-XXXXXX"
+                        value={bookingRef}
+                        onChange={(e) => setBookingRef(e.target.value)}
+                        className="h-14 pl-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all uppercase font-bold tracking-widest"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                      <Input
+                        type="email"
+                        placeholder="john@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="h-14 pl-12 rounded-2xl border-slate-200 bg-white/50 focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="h-14 rounded-2xl bg-slate-950 hover:bg-primary text-white font-black uppercase tracking-[0.2em] text-xs transition-all duration-500 shadow-xl group"
+                  >
+                    {isLoading ? "SEARCHING..." : (
+                      <>
+                        TRACK BOOKING
+                        <Search className="h-4 w-4 ml-3 group-hover:scale-110 transition-transform" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </motion.div>
+
+              {/* Results */}
+              {searched && booking && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="space-y-8"
+                >
+                  {/* Status Card */}
+                  <div className="glass-morphism overflow-hidden rounded-[3.5rem] border border-white shadow-premium">
+                    <div className="bg-slate-950 p-10 md:p-16 text-white relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-48 -mt-48" />
+                      
+                      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-10">
+                        <div>
+                          <p className="text-primary-glow font-black text-[10px] uppercase tracking-[0.3em] mb-4">Current Status</p>
+                          <div className="flex items-center gap-4 mb-6">
+                            {(() => {
+                              const config = statusConfig[booking.status as keyof typeof statusConfig] || statusConfig.pending;
+                              const Icon = config.icon;
+                              return (
+                                <>
+                                  <div className={`px-6 py-2 rounded-full border font-black text-[10px] tracking-[0.2em] ${config.color}`}>
+                                    {config.label}
+                                  </div>
+                                  <Icon className="h-6 w-6 text-white/20" />
+                                </>
+                              );
+                            })()}
+                          </div>
+                          <h2 className="font-display text-4xl md:text-5xl font-black tracking-tight mb-4">
+                            {booking.tour_title_snapshot}
+                          </h2>
+                          <p className="text-slate-400 text-lg font-medium max-w-xl">
+                            {(statusConfig[booking.status as keyof typeof statusConfig] || statusConfig.pending).description}
+                          </p>
+                        </div>
+                        
+                        <div className="bg-white/5 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/10 text-center min-w-[240px]">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Reference Number</p>
+                          <p className="text-3xl font-display font-black text-primary-glow tracking-widest">{booking.booking_reference}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-10 md:p-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-slate-400 mb-2">
+                          <Calendar className="h-4 w-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Tour Date</span>
+                        </div>
+                        <p className="text-xl font-bold text-slate-900">
+                          {format(new Date(booking.tour_date), "MMMM dd, yyyy")}
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-slate-400 mb-2">
+                          <Users className="h-4 w-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Travelers</span>
+                        </div>
+                        <p className="text-xl font-bold text-slate-900">
+                          {booking.adults} Adults {booking.children ? `, ${booking.children} Children` : ""}
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-slate-400 mb-2">
+                          <MapPin className="h-4 w-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Guest Name</span>
+                        </div>
+                        <p className="text-xl font-bold text-slate-900">{booking.full_name}</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 text-slate-400 mb-2">
+                          <Clock className="h-4 w-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Booked On</span>
+                        </div>
+                        <p className="text-xl font-bold text-slate-900">
+                          {booking.created_at ? format(new Date(booking.created_at), "MMM dd, yyyy") : "N/A"}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <CardContent className="p-6 space-y-6">
-                    {/* Booking Reference */}
-                    <div className="text-center py-4 bg-ocean-light rounded-xl">
-                      <p className="text-sm text-muted-foreground mb-1">Booking Reference</p>
-                      <p className="text-2xl font-bold text-primary font-mono">
-                        {booking.booking_reference}
-                      </p>
-                    </div>
-
-                    {/* Tour Details */}
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-3">Tour Details</h3>
-                      <div className="bg-card rounded-lg p-4 border border-border space-y-3">
-                        <div className="flex items-start gap-3">
-                          <MapPin className="h-5 w-5 text-primary mt-0.5" />
-                          <div>
-                            <p className="font-medium text-foreground">{booking.tour_title_snapshot}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Calendar className="h-5 w-5 text-primary" />
-                          <p className="text-muted-foreground">
-                            {format(new Date(booking.tour_date), "EEEE, MMMM d, yyyy")}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Users className="h-5 w-5 text-primary" />
-                          <p className="text-muted-foreground">
-                            {booking.adults || 1} Adult{(booking.adults || 1) > 1 ? "s" : ""}
-                            {booking.children ? `, ${booking.children} Child${booking.children > 1 ? "ren" : ""}` : ""}
-                          </p>
-                        </div>
+                  {/* Help Card */}
+                  <div className="glass-morphism p-10 rounded-[3rem] border border-white flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="h-8 w-8 text-primary" />
                       </div>
-                    </div>
-
-                    {/* Guest Details */}
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-3">Guest Details</h3>
-                      <div className="bg-card rounded-lg p-4 border border-border space-y-2">
-                        <p className="text-foreground font-medium">{booking.full_name}</p>
-                        <p className="text-muted-foreground text-sm">{booking.email}</p>
-                        <p className="text-muted-foreground text-sm">{booking.phone}</p>
-                        {booking.country && (
-                          <p className="text-muted-foreground text-sm">{booking.country}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Special Requests */}
-                    {booking.message && (
                       <div>
-                        <h3 className="font-semibold text-foreground mb-3">Special Requests</h3>
-                        <div className="bg-sand-light rounded-lg p-4">
-                          <p className="text-muted-foreground text-sm">{booking.message}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Booked On */}
-                    {booking.created_at && (
-                      <div className="text-center text-sm text-muted-foreground pt-4 border-t border-border">
-                        Booked on {format(new Date(booking.created_at), "MMMM d, yyyy 'at' h:mm a")}
-                      </div>
-                    )}
-
-                    {/* Contact CTA */}
-                    <div className="bg-ocean-light rounded-xl p-4 text-center">
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Have questions about your booking?
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                        <Button asChild variant="outline" size="sm">
-                          <a href={COMPANY.whatsappLink} target="_blank" rel="noopener noreferrer">
-                            <Phone className="h-4 w-4 mr-2" />
-                            WhatsApp
-                          </a>
-                        </Button>
-                        <Button asChild variant="outline" size="sm">
-                          <a href={`mailto:${COMPANY.email}?subject=Booking ${booking.booking_reference}`}>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Email Us
-                          </a>
-                        </Button>
+                        <h3 className="font-display text-2xl font-black text-slate-900 tracking-tight">NEED ASSISTANCE?</h3>
+                        <p className="text-slate-500 font-medium">Our team is available 24/7 to help with your booking.</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+                    <div className="flex gap-4">
+                      <Button asChild variant="outline" className="h-14 px-8 rounded-2xl border-slate-200 font-black uppercase tracking-widest text-[10px]">
+                        <a href={`mailto:${COMPANY.email}`}>EMAIL US</a>
+                      </Button>
+                      <Button asChild className="h-14 px-8 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] shadow-lg">
+                        <a href={`https://wa.me/${COMPANY.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">WHATSAPP</a>
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-            {/* Not Found State */}
-            {searched && !booking && !isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-8"
-              >
-                <Card className="shadow-medium">
-                  <CardContent className="py-12 text-center">
-                    <XCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      Booking Not Found
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      We couldn't find a booking matching the provided reference and email.
-                      Please check your details and try again.
-                    </p>
-                    <Button asChild variant="outline">
-                      <a href={COMPANY.whatsappLink} target="_blank" rel="noopener noreferrer">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Contact Support
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+              {searched && !booking && !isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-20 glass-morphism rounded-[3rem] border border-white"
+                >
+                  <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <XCircle className="h-10 w-10 text-slate-300" />
+                  </div>
+                  <h3 className="font-display text-3xl font-black text-slate-900 mb-4 tracking-tight">NO BOOKING FOUND</h3>
+                  <p className="text-slate-500 text-lg font-medium max-w-md mx-auto mb-10">
+                    We couldn't find a booking with those details. Please double-check your reference number and email.
+                  </p>
+                  <Button 
+                    onClick={() => setSearched(false)}
+                    variant="outline" 
+                    className="h-14 px-10 rounded-2xl border-slate-200 font-black uppercase tracking-widest text-[10px]"
+                  >
+                    TRY AGAIN
+                  </Button>
+                </motion.div>
+              )}
+            </div>
           </div>
-        </div>
+        </section>
       </Layout>
     </>
   );
 }
+

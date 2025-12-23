@@ -113,19 +113,21 @@ export default function TourDetailPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="pt-24 pb-16">
+        <div className="pt-32 pb-16">
           <div className="container">
-            <Skeleton className="h-8 w-32 mb-8" />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <Skeleton className="aspect-video rounded-2xl" />
-                <Skeleton className="h-10 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-10 w-40 mb-12 rounded-full" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              <div className="lg:col-span-8 space-y-8">
+                <Skeleton className="aspect-[16/9] rounded-[2.5rem]" />
+                <Skeleton className="h-16 w-3/4 rounded-2xl" />
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full rounded-full" />
+                  <Skeleton className="h-4 w-full rounded-full" />
+                  <Skeleton className="h-4 w-2/3 rounded-full" />
+                </div>
               </div>
-              <div>
-                <Skeleton className="h-96 rounded-2xl" />
+              <div className="lg:col-span-4">
+                <Skeleton className="h-[600px] rounded-[2.5rem]" />
               </div>
             </div>
           </div>
@@ -137,31 +139,25 @@ export default function TourDetailPage() {
   if (error || !tour) {
     return (
       <Layout>
-        <div className="pt-24 pb-16">
-          <div className="container text-center py-20">
-            <h1 className="font-display text-3xl font-bold text-foreground mb-4">
-              Tour Not Found
+        <div className="pt-32 pb-16">
+          <div className="container text-center py-32 glass-morphism rounded-[3rem] max-w-3xl mx-auto border border-slate-100">
+            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
+              <X className="h-12 w-12 text-slate-300" />
+            </div>
+            <h1 className="font-display text-4xl font-black text-slate-900 mb-6 tracking-tight">
+              TOUR NOT FOUND
             </h1>
-            <p className="text-muted-foreground mb-8">
-              The tour you're looking for doesn't exist or is no longer available.
+            <p className="text-slate-500 text-xl mb-10 font-medium">
+              The adventure you're looking for has vanished into the horizon.
             </p>
-            <Button asChild>
-              <Link to="/tours">Browse All Tours</Link>
+            <Button asChild size="lg" className="rounded-full px-10 h-14 bg-primary hover:bg-primary/90 text-white font-bold shadow-xl">
+              <Link to="/tours">Explore Other Adventures</Link>
             </Button>
           </div>
         </div>
       </Layout>
     );
   }
-
-  const mainImage =
-    images[0]?.path ||
-    "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1200&auto=format&fit=crop";
-
-  // Get minimum date (tomorrow)
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const minDate = tomorrow.toISOString().split("T")[0];
 
   return (
     <>
@@ -170,331 +166,310 @@ export default function TourDetailPage() {
         <meta name="description" content={tour.short_description || ""} />
       </Helmet>
       <Layout>
-        <div className="pt-24 pb-16 bg-background">
-          <div className="container">
-            {/* Back Button */}
+        {/* Hero Section */}
+        <section className="relative pt-48 pb-24 overflow-hidden bg-slate-950">
+          <div className="absolute inset-0 z-0">
+            <img
+              src={tour.image || "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80"}
+              alt={tour.title}
+              className="w-full h-full object-cover opacity-50 animate-ken-burns"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950" />
+          </div>
+          
+          <div className="container relative z-10">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <Button variant="ghost" asChild className="gap-2">
-                <Link to="/tours">
-                  <ChevronLeft className="h-4 w-4" />
-                  Back to Tours
-                </Link>
-              </Button>
-            </motion.div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="lg:col-span-2 space-y-8"
+              <Link
+                to="/tours"
+                className="inline-flex items-center gap-2 text-white/70 hover:text-primary-glow transition-colors mb-10 font-black text-xs uppercase tracking-[0.2em]"
               >
-                {/* Hero Image */}
-                <div className="relative aspect-video rounded-2xl overflow-hidden">
-                  <img
-                    src={mainImage}
-                    alt={tour.title}
-                    className="w-full h-full object-cover"
-                  />
-                  {tour.is_featured && (
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-sm font-medium">
-                        <Star className="h-4 w-4" fill="currentColor" />
-                        Featured
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Title & Meta */}
-                <div>
-                  <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-                    {tour.title}
-                  </h1>
-                  <div className="flex flex-wrap gap-4 text-muted-foreground">
-                    {tour.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5 text-primary" />
-                        <span>{tour.location}</span>
-                      </div>
-                    )}
-                    {tour.duration_hours && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-primary" />
-                        <span>{tour.duration_hours} hours</span>
-                      </div>
-                    )}
-                    {tour.category && (
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 rounded-full bg-ocean-light text-primary text-sm">
-                          {tour.category}
-                        </span>
-                      </div>
-                    )}
+                <ChevronLeft className="h-4 w-4" />
+                Back to Collection
+              </Link>
+              
+              <div className="flex flex-wrap gap-3 mb-8">
+                <Badge className="bg-primary text-white border-0 px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] shadow-glow">
+                  {tour.category || "Adventure"}
+                </Badge>
+                {tour.is_featured && (
+                  <Badge className="bg-accent text-accent-foreground border-0 px-5 py-2 rounded-full font-black uppercase text-[10px] tracking-[0.2em] shadow-lg">
+                    <Star className="h-3 w-3 mr-1.5 fill-current" />
+                    Featured
+                  </Badge>
+                )}
+              </div>
+              
+              <h1 className="font-display text-5xl md:text-8xl font-black text-white mb-10 leading-[0.9] tracking-tighter max-w-5xl">
+                {tour.title}
+              </h1>
+              
+              <div className="flex flex-wrap gap-8 text-white/90">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <MapPin className="h-5 w-5 text-primary-glow" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Location</p>
+                    <p className="font-bold">{tour.location || "Zanzibar"}</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <Clock className="h-5 w-5 text-primary-glow" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Duration</p>
+                    <p className="font-bold">{tour.duration_hours} Hours</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <Star className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Rating</p>
+                    <p className="font-bold">4.9/5.0</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Content Section */}
+        <section className="py-24 bg-slate-50">
+          <div className="container">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+              {/* Main Content */}
+              <div className="lg:col-span-8 space-y-16">
+                {/* Gallery/Main Image */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="relative rounded-[3rem] overflow-hidden shadow-premium border border-white"
+                >
+                  <img
+                    src={tour.image || "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80"}
+                    alt={tour.title}
+                    className="w-full aspect-video object-cover"
+                  />
+                </motion.div>
 
                 {/* Description */}
-                <div>
-                  <h2 className="font-display text-xl font-semibold text-foreground mb-4">
-                    Overview
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {tour.long_description}
-                  </p>
+                <div className="glass-morphism rounded-[3rem] p-10 md:p-16 border border-white">
+                  <h2 className="font-display text-4xl font-black text-slate-900 mb-8 tracking-tight">THE EXPERIENCE</h2>
+                  <div className="prose prose-lg max-w-none text-slate-600 font-medium leading-relaxed">
+                    {tour.description?.split('\n').map((paragraph, i) => (
+                      <p key={i} className="mb-6 last:mb-0">{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Itinerary */}
-                {tour.itinerary && (
-                  <div>
-                    <h2 className="font-display text-xl font-semibold text-foreground mb-4">
-                      Itinerary
-                    </h2>
-                    <div className="bg-ocean-light rounded-xl p-6">
-                      <p className="text-foreground whitespace-pre-line">
-                        {tour.itinerary}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Includes / Excludes */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {tour.includes && (
-                    <div className="bg-card rounded-xl p-6 shadow-card">
-                      <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Check className="h-5 w-5 text-forest-green" />
-                        What's Included
-                      </h3>
-                      <ul className="space-y-2">
-                        {tour.includes.split(",").map((item, i) => (
-                          <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                            <Check className="h-4 w-4 text-forest-green mt-0.5 shrink-0" />
-                            <span>{item.trim()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {tour.excludes && (
-                    <div className="bg-card rounded-xl p-6 shadow-card">
-                      <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <X className="h-5 w-5 text-destructive" />
-                        Not Included
-                      </h3>
-                      <ul className="space-y-2">
-                        {tour.excludes.split(",").map((item, i) => (
-                          <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                            <X className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-                            <span>{item.trim()}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                {/* Pickup Info */}
-                {tour.pickup_info && (
-                  <div className="bg-sand-light rounded-xl p-6">
-                    <h3 className="font-display text-lg font-semibold text-foreground mb-2">
-                      Pickup Information
-                    </h3>
-                    <p className="text-muted-foreground">{tour.pickup_info}</p>
-                  </div>
-                )}
-
-                {/* What to Bring */}
-                {tour.what_to_bring && (
-                  <div className="bg-card rounded-xl p-6 shadow-card">
-                    <h3 className="font-display text-lg font-semibold text-foreground mb-2">
-                      What to Bring
-                    </h3>
-                    <p className="text-muted-foreground">{tour.what_to_bring}</p>
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Booking Sidebar */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="lg:col-span-1"
-              >
-                <div className="sticky top-24">
-                  <Card className="shadow-medium">
-                    <CardHeader>
-                      <CardTitle className="font-display text-2xl">
-                        Book This Tour
-                      </CardTitle>
-                      <CardDescription>
-                        Secure your spot on this amazing adventure
-                      </CardDescription>
-                      <div className="pt-4 border-t border-border mt-4">
-                        <div className="flex items-end justify-between">
-                          <div>
-                            <p className="text-sm text-muted-foreground">From</p>
-                            <p className="text-3xl font-bold text-primary">
-                              ${tour.price?.toFixed(0)}
-                            </p>
+                {/* Highlights */}
+                {tour.highlights && tour.highlights.length > 0 && (
+                  <div className="glass-morphism rounded-[3rem] p-10 md:p-16 border border-white">
+                    <h2 className="font-display text-4xl font-black text-slate-900 mb-10 tracking-tight">HIGHLIGHTS</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {tour.highlights.map((highlight, i) => (
+                        <div key={i} className="flex items-start gap-4 group">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <Check className="h-4 w-4" />
                           </div>
-                          <p className="text-muted-foreground">per person</p>
+                          <p className="text-slate-700 font-bold leading-tight pt-1">{highlight}</p>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Inclusions/Exclusions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="glass-morphism rounded-[3rem] p-10 border border-white">
+                    <h3 className="font-display text-2xl font-black text-slate-900 mb-8 tracking-tight flex items-center gap-3">
+                      <div className="w-2 h-8 bg-primary rounded-full" />
+                      INCLUDED
+                    </h3>
+                    <ul className="space-y-4">
+                      {tour.inclusions?.map((item, i) => (
+                        <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
+                          <Check className="h-4 w-4 text-primary" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="glass-morphism rounded-[3rem] p-10 border border-white">
+                    <h3 className="font-display text-2xl font-black text-slate-900 mb-8 tracking-tight flex items-center gap-3">
+                      <div className="w-2 h-8 bg-slate-300 rounded-full" />
+                      NOT INCLUDED
+                    </h3>
+                    <ul className="space-y-4">
+                      {tour.exclusions?.map((item, i) => (
+                        <li key={i} className="flex items-center gap-3 text-slate-400 font-medium">
+                          <X className="h-4 w-4 text-slate-300" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sidebar / Booking Form */}
+              <div className="lg:col-span-4">
+                <div className="sticky top-32 space-y-8">
+                  {/* Price Card */}
+                  <Card className="rounded-[3rem] overflow-hidden border-0 shadow-premium bg-slate-900 text-white">
+                    <CardHeader className="p-10 pb-0">
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-glow mb-2">Starting From</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-6xl font-black tracking-tighter">${tour.price}</span>
+                        <span className="text-slate-400 font-bold uppercase tracking-widest text-xs">Per Person</span>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div>
-                          <Label htmlFor="full_name">Full Name *</Label>
-                          <Input
-                            id="full_name"
-                            placeholder="John Doe"
-                            {...register("full_name")}
+                    <CardContent className="p-10">
+                      <div className="space-y-6 mb-10">
+                        <div className="flex items-center justify-between py-4 border-b border-white/10">
+                          <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">Group Size</span>
+                          <span className="font-black">Up to 12 People</span>
+                        </div>
+                        <div className="flex items-center justify-between py-4 border-b border-white/10">
+                          <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">Language</span>
+                          <span className="font-black">English, Swahili</span>
+                        </div>
+                        <div className="flex items-center justify-between py-4 border-b border-white/10">
+                          <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">Availability</span>
+                          <span className="font-black text-primary-glow">Daily</span>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-lg shadow-glow transition-all duration-300"
+                        onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}
+                      >
+                        BOOK THIS ADVENTURE
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Booking Form Card */}
+                  <Card id="booking-form" className="rounded-[3rem] overflow-hidden border-0 shadow-premium bg-white">
+                    <CardHeader className="p-10">
+                      <CardTitle className="font-display text-3xl font-black text-slate-900 tracking-tight">RESERVE NOW</CardTitle>
+                      <CardDescription className="text-slate-500 font-medium">Secure your spot today. No upfront payment required.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-10 pt-0">
+                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Full Name</Label>
+                          <Input 
+                            {...register("full_name")} 
+                            placeholder="John Doe" 
+                            className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
                           />
-                          {errors.full_name && (
-                            <p className="text-destructive text-sm mt-1">
-                              {errors.full_name.message}
-                            </p>
-                          )}
+                          {errors.full_name && <p className="text-xs text-red-500 font-bold ml-2">{errors.full_name.message}</p>}
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Email</Label>
+                            <Input 
+                              {...register("email")} 
+                              type="email" 
+                              placeholder="john@example.com" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
+                            />
+                            {errors.email && <p className="text-xs text-red-500 font-bold ml-2">{errors.email.message}</p>}
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Phone</Label>
+                            <Input 
+                              {...register("phone")} 
+                              placeholder="+1 234 567 890" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
+                            />
+                            {errors.phone && <p className="text-xs text-red-500 font-bold ml-2">{errors.phone.message}</p>}
+                          </div>
                         </div>
 
-                        <div>
-                          <Label htmlFor="email">Email *</Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="john@example.com"
-                            {...register("email")}
+                        <div className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Preferred Date</Label>
+                          <Input 
+                            {...register("tour_date")} 
+                            type="date" 
+                            className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
                           />
-                          {errors.email && (
-                            <p className="text-destructive text-sm mt-1">
-                              {errors.email.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="phone">Phone *</Label>
-                          <Input
-                            id="phone"
-                            placeholder="+1 234 567 8900"
-                            {...register("phone")}
-                          />
-                          {errors.phone && (
-                            <p className="text-destructive text-sm mt-1">
-                              {errors.phone.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="country">Country *</Label>
-                          <Input
-                            id="country"
-                            placeholder="United States"
-                            {...register("country")}
-                          />
-                          {errors.country && (
-                            <p className="text-destructive text-sm mt-1">
-                              {errors.country.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <Label htmlFor="tour_date">Preferred Date *</Label>
-                          <Input
-                            id="tour_date"
-                            type="date"
-                            min={minDate}
-                            {...register("tour_date")}
-                          />
-                          {errors.tour_date && (
-                            <p className="text-destructive text-sm mt-1">
-                              {errors.tour_date.message}
-                            </p>
-                          )}
+                          {errors.tour_date && <p className="text-xs text-red-500 font-bold ml-2">{errors.tour_date.message}</p>}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="adults">Adults *</Label>
-                            <Input
-                              id="adults"
-                              type="number"
-                              min={1}
-                              max={50}
-                              {...register("adults")}
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Adults</Label>
+                            <Input 
+                              {...register("adults")} 
+                              type="number" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
                             />
-                            {errors.adults && (
-                              <p className="text-destructive text-sm mt-1">
-                                {errors.adults.message}
-                              </p>
-                            )}
                           </div>
-                          <div>
-                            <Label htmlFor="children">Children</Label>
-                            <Input
-                              id="children"
-                              type="number"
-                              min={0}
-                              max={50}
-                              {...register("children")}
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Children</Label>
+                            <Input 
+                              {...register("children")} 
+                              type="number" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
                             />
                           </div>
                         </div>
 
-                        <div>
-                          <Label htmlFor="message">Special Requests</Label>
-                          <Textarea
-                            id="message"
-                            placeholder="Any dietary requirements, accessibility needs, or special requests..."
-                            rows={3}
-                            {...register("message")}
+                        <div className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Message (Optional)</Label>
+                          <Textarea 
+                            {...register("message")} 
+                            placeholder="Any special requirements?" 
+                            className="rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20 min-h-[100px]"
                           />
                         </div>
 
-                        <Button
-                          type="submit"
-                          variant="hero"
-                          size="lg"
-                          className="w-full"
+                        <Button 
+                          type="submit" 
+                          className="w-full h-16 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-black text-lg transition-all duration-300"
                           disabled={isSubmitting}
                         >
-                          {isSubmitting ? "Submitting..." : "Book Now"}
+                          {isSubmitting ? "SUBMITTING..." : "CONFIRM BOOKING"}
                         </Button>
-
-                        <p className="text-xs text-muted-foreground text-center">
-                          We'll confirm your booking within 24 hours
+                        
+                        <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">
+                          By booking, you agree to our terms and conditions.
                         </p>
                       </form>
-
-                      {/* Alternative Contact */}
-                      <div className="mt-6 pt-6 border-t border-border">
-                        <p className="text-sm text-muted-foreground text-center mb-3">
-                          Prefer to book by phone?
-                        </p>
-                        <Button asChild variant="outline" className="w-full">
-                          <a href={`tel:${COMPANY.phone}`}>
-                            <Phone className="h-4 w-4 mr-2" />
-                            {COMPANY.phone}
-                          </a>
-                        </Button>
-                      </div>
                     </CardContent>
                   </Card>
+
+                  {/* WhatsApp CTA */}
+                  <div className="glass-morphism rounded-[2.5rem] p-8 border border-white text-center">
+                    <p className="text-slate-500 font-bold text-sm mb-4 uppercase tracking-widest">Need instant help?</p>
+                    <a 
+                      href={COMPANY.whatsappLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3 text-primary font-black text-xl hover:scale-105 transition-transform"
+                    >
+                      <Phone className="h-6 w-6" />
+                      CHAT ON WHATSAPP
+                    </a>
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </Layout>
     </>
   );
 }
+
