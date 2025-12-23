@@ -6,107 +6,72 @@
 
 @layer base {
   :root {
-    /* Premium Modern Palette */
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    /* Ocean-inspired color palette */
+    --background: 200 20% 98%;
+    --foreground: 210 30% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 210 30% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
+    --popover-foreground: 210 30% 15%;
 
-    /* Vibrant Azure Primary */
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 20% 98%;
-    --primary-glow: 199 89% 60%;
+    /* Ocean Blue Primary */
+    --primary: 195 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 195 75% 55%;
 
-    /* Sophisticated Slate Secondary */
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
+    /* Sandy Warm Secondary */
+    --secondary: 35 45% 92%;
+    --secondary-foreground: 35 50% 25%;
 
-    /* Muted Tones */
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
+    /* Muted Ocean Tones */
+    --muted: 200 25% 94%;
+    --muted-foreground: 210 15% 45%;
 
-    /* Accent - Tropical Gold */
-    --accent: 45 93% 47%;
-    --accent-foreground: 220.9 39.3% 11%;
+    /* Accent - Coral/Sunset */
+    --accent: 15 85% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 199 89% 48%;
+    --border: 200 25% 88%;
+    --input: 200 25% 88%;
+    --ring: 195 80% 40%;
 
-    --radius: 1.25rem;
+    --radius: 0.75rem;
 
     /* Custom design tokens */
-    --ocean-light: 199 89% 96%;
-    --ocean-medium: 199 89% 85%;
-    --sand-light: 45 93% 96%;
-    --sand-medium: 45 93% 88%;
+    --ocean-light: 195 65% 95%;
+    --ocean-medium: 195 70% 85%;
+    --sand-light: 35 50% 96%;
+    --sand-medium: 35 45% 88%;
+    --sunset-orange: 25 90% 55%;
+    --sunset-pink: 350 70% 65%;
+    --forest-green: 155 45% 35%;
+    
+    /* Gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(195, 80%, 40%) 0%, hsl(210, 70%, 50%) 100%);
+    --gradient-sunset: linear-gradient(135deg, hsl(25, 90%, 55%) 0%, hsl(350, 70%, 65%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(195, 65%, 95%) 0%, hsl(200, 20%, 98%) 100%);
+    --gradient-sand: linear-gradient(135deg, hsl(35, 50%, 96%) 0%, hsl(35, 45%, 88%) 100%);
     
     /* Shadows */
-    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 0 30px hsla(199, 89%, 48%, 0.25);
-    --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
-  }
+    --shadow-soft: 0 4px 20px -4px hsl(195 80% 40% / 0.15);
+    --shadow-medium: 0 8px 30px -6px hsl(195 80% 40% / 0.2);
+    --shadow-glow: 0 0 40px hsl(195 75% 55% / 0.3);
+    --shadow-card: 0 2px 12px -2px hsl(210 30% 15% / 0.08);
 
-  @keyframes ken-burns {
-    0% { transform: scale(1) translate(0, 0); }
-    50% { transform: scale(1.1) translate(-1%, -1%); }
-    100% { transform: scale(1) translate(0, 0); }
-  }
-
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-  }
-
-  @keyframes pulse-glow {
-    0% { box-shadow: 0 0 0 0 rgba(0, 174, 239, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(0, 174, 239, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 174, 239, 0); }
-  }
-
-  .animate-ken-burns {
-    animation: ken-burns 30s ease-in-out infinite;
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s infinite;
-  }
-
-  .glass-morphism {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-premium;
-  }
-
-  .glass-dark {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10;
-  }
-
-  .text-primary-glow {
-    @apply text-primary;
-    text-shadow: 0 0 15px hsla(199, 89%, 48%, 0.4);
-  }
-
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-
-  .shadow-premium {
-    box-shadow: var(--shadow-premium);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 30% 15%;
+    --sidebar-primary: 195 80% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 195 65% 95%;
+    --sidebar-accent-foreground: 195 80% 30%;
+    --sidebar-border: 200 25% 88%;
+    --sidebar-ring: 195 80% 40%;
   }
 
   .dark {

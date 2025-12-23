@@ -76,180 +76,122 @@ export default function ToursPage() {
       </Helmet>
       <Layout>
         {/* Hero */}
-        <section className="relative pt-64 pb-32 overflow-hidden bg-slate-950">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80"
-              alt="Zanzibar Coast"
-              className="w-full h-full object-cover opacity-40 animate-ken-burns"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950" />
-          </div>
-          
-          <div className="container relative z-10">
+        <section className="pt-32 pb-16 bg-gradient-hero">
+          <div className="container">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="text-center max-w-4xl mx-auto"
+              className="text-center max-w-3xl mx-auto"
             >
-              <span className="inline-flex items-center gap-2 px-5 py-2 mb-8 text-[10px] font-black tracking-[0.3em] uppercase bg-primary/20 backdrop-blur-md border border-primary/30 text-primary-glow rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Curated Adventures
-              </span>
-              <h1 className="font-display text-6xl md:text-8xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
-                EXPLORE THE <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-glow italic">ISLAND VIBE</span>
+              <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Explore Zanzibar Tours
               </h1>
-              <p className="text-slate-300 text-xl md:text-2xl font-medium max-w-2xl mx-auto leading-relaxed">
-                From hidden sandbanks to ancient spice markets, discover the soul of Zanzibar through our exclusive collection.
+              <p className="text-muted-foreground text-lg">
+                Discover the best experiences the Spice Island has to offer. From cultural heritage to underwater adventures.
               </p>
             </motion.div>
           </div>
         </section>
 
-        {/* Filters Section */}
-        <section className="relative z-20 -mt-16 pb-32">
+        {/* Filters */}
+        <section className="py-8 bg-card border-b border-border sticky top-16 z-30">
           <div className="container">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="glass-morphism rounded-[2.5rem] p-8 md:p-10 shadow-premium border border-white/20"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-                {/* Search */}
-                <div className="lg:col-span-5 space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Search Experiences</label>
-                  <div className="relative group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
-                    <Input
-                      placeholder="Where do you want to go?"
-                      className="pl-14 h-16 rounded-2xl bg-slate-50 border-slate-100 focus:ring-primary/20 focus:border-primary text-lg font-medium transition-all"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                </div>
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              {/* Search */}
+              <div className="relative flex-1 w-full md:max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search tours..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
 
-                {/* Category */}
-                <div className="lg:col-span-3 space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Category</label>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="h-16 rounded-2xl bg-slate-50 border-slate-100 focus:ring-primary/20 text-lg font-medium">
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-slate-100 shadow-premium">
-                      <SelectItem value="all" className="font-medium">All Categories</SelectItem>
-                      {TOUR_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value} className="font-medium">
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex gap-3 w-full md:w-auto">
+                {/* Category Filter */}
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full md:w-[160px]">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TOUR_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
                 {/* Sort */}
-                <div className="lg:col-span-3 space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Sort By</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="h-16 rounded-2xl bg-slate-50 border-slate-100 focus:ring-primary/20 text-lg font-medium">
-                      <SelectValue placeholder="Sort By" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-slate-100 shadow-premium">
-                      <SelectItem value="featured" className="font-medium">Featured First</SelectItem>
-                      <SelectItem value="price-low" className="font-medium">Price: Low to High</SelectItem>
-                      <SelectItem value="price-high" className="font-medium">Price: High to Low</SelectItem>
-                      <SelectItem value="duration" className="font-medium">Duration</SelectItem>
-                      <SelectItem value="newest" className="font-medium">Newest First</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Reset/Filter Icon */}
-                <div className="lg:col-span-1">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="h-16 w-full rounded-2xl bg-slate-50 border-slate-100 hover:bg-slate-100 text-slate-900 transition-all"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setCategoryFilter("all");
-                      setSortBy("featured");
-                    }}
-                  >
-                    <SlidersHorizontal className="h-6 w-6" />
-                  </Button>
-                </div>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full md:w-[160px]">
+                    <SlidersHorizontal className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="duration">Duration</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </motion.div>
-
-            {/* Results Info */}
-            <div className="mt-16 mb-10 flex items-center justify-between px-4">
-              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
-                Showing <span className="text-slate-900">{filteredTours.length}</span> Experiences
-              </p>
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery("")}
-                  className="text-primary font-black text-xs uppercase tracking-widest hover:underline"
-                >
-                  Clear Search
-                </button>
-              )}
             </div>
+          </div>
+        </section>
 
-            {/* Tours Grid */}
+        {/* Tours Grid */}
+        <section className="py-16 bg-background">
+          <div className="container">
             {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-[2.5rem] overflow-hidden shadow-card border border-slate-50">
-                    <Skeleton className="aspect-[1.1/1]" />
-                    <div className="p-8 space-y-4">
-                      <Skeleton className="h-8 w-3/4" />
+                  <div key={i} className="bg-card rounded-2xl overflow-hidden">
+                    <Skeleton className="aspect-[4/3]" />
+                    <div className="p-5 space-y-3">
+                      <Skeleton className="h-6 w-3/4" />
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-2/3" />
-                      <div className="pt-6 border-t border-slate-50 flex justify-between">
-                        <Skeleton className="h-10 w-24 rounded-full" />
-                        <Skeleton className="h-10 w-10 rounded-full" />
-                      </div>
+                      <Skeleton className="h-10 w-full" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-32 glass-morphism rounded-[3rem] max-w-2xl mx-auto border border-slate-100">
-                <p className="text-slate-500 font-bold text-xl">Unable to load tours. Please try again later.</p>
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Unable to load tours. Please try again later.</p>
               </div>
             ) : filteredTours.length === 0 ? (
-              <div className="text-center py-32 glass-morphism rounded-[3rem] max-w-2xl mx-auto border border-slate-100">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Search className="h-10 w-10 text-slate-300" />
+              <div className="text-center py-12">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2">No experiences found</h3>
-                <p className="text-slate-500 font-medium">Try adjusting your filters or search query.</p>
-                <Button 
-                  variant="link" 
-                  className="mt-6 text-primary font-black uppercase tracking-widest"
+                <h3 className="font-display text-xl font-semibold text-foreground mb-2">No tours found</h3>
+                <p className="text-muted-foreground mb-4">Try adjusting your search or filters</p>
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setSearchQuery("");
                     setCategoryFilter("all");
                   }}
                 >
-                  Reset All Filters
+                  Clear Filters
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {filteredTours.map((tour, index) => (
-                  <TourCard
-                    key={tour.id}
-                    {...tour}
-                    index={index}
-                  />
-                ))}
-              </div>
+              <>
+                <p className="text-muted-foreground mb-8">
+                  Showing {filteredTours.length} tour{filteredTours.length !== 1 ? "s" : ""}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredTours.map((tour, index) => (
+                    <TourCard key={tour.id} {...tour} index={index} />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         </section>

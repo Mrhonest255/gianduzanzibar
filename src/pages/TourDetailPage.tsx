@@ -91,30 +91,49 @@ export default function TourDetailPage() {
 
       if (error) throw error;
 
-      // Send booking confirmation email
-      const totalGuests = data.adults + (data.children || 0);
-      const totalPrice = tour.price ? tour.price * totalGuests : 0;
-      
-      try {
-        await supabase.functions.invoke("send-email", {
-          body: {
-            type: "booking",
-            data: {
-              full_name: data.full_name,
-              email: data.email,
-              phone: data.phone,
-              tour_title: tour.title,
-              tour_date: data.tour_date,
-              num_guests: totalGuests,
-              total_price: totalPrice,
-              booking_reference: booking.booking_reference,
-            },
-          },
-        });
-      } catch (emailError) {
-        console.error("Email notification failed:", emailError);
-        // Don't fail the whole booking if email fails
-      }
+      // Send email notification to admin
+      const totalGuests = data.adults + data.children;
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #16a34a; border-bottom: 2px solid #16a34a; padding-bottom: 10px;">
+            🎉 New Booking Received!
+          </h2>
+          <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <p style="margin: 0; font-size: 18px;"><strong>Booking Reference:</strong> ${booking.booking_reference}</p>
+          </div>
+          <h3 style="color: #334155;">Tour Details</h3>
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 10px 0;">
+            <p><strong>Tour:</strong> ${tour.title}</p>
+            <p><strong>Date:</strong> ${data.tour_date}</p>
+            <p><strong>Guests:</strong> ${data.adults} Adults${data.children > 0 ? `, ${data.children} Children` : ''} (${totalGuests} total)</p>
+          </div>
+          <h3 style="color: #334155;">Customer Information</h3>
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 10px 0;">
+            <p><strong>Name:</strong> ${data.full_name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Phone:</strong> ${data.phone}</p>
+            <p><strong>Country:</strong> ${data.country}</p>
+          </div>
+          ${data.message ? `
+          <h3 style="color: #334155;">Special Requests</h3>
+          <div style="background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <p style="white-space: pre-wrap; margin: 0;">${data.message}</p>
+          </div>
+          ` : ''}
+          <p style="color: #64748b; font-size: 12px; margin-top: 20px;">
+            This booking was made through the Zanzibar Vibe Tours website.
+          </p>
+        </div>
+      `;
+
+      await supabase.functions.invoke('send-email', {
+        body: {
+          subject: `New Booking: ${tour.title} - ${booking.booking_reference}`,
+          html: emailHtml,
+          reply_to: data.email,
+          from_email: data.email,
+        },
+      });
 
       toast({
         title: "Booking Submitted!",

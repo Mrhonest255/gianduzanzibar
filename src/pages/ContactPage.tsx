@@ -49,24 +49,36 @@ export default function ContactPage() {
       });
       if (error) throw error;
 
-      // Send email notification
-      try {
-        await supabase.functions.invoke("send-email", {
-          body: {
-            type: "contact",
-            data: {
-              full_name: data.full_name,
-              email: data.email,
-              phone: data.phone,
-              subject: data.subject,
-              message: data.message,
-            },
-          },
-        });
-      } catch (emailError) {
-        console.error("Email notification failed:", emailError);
-        // Don't fail the whole submission if email fails
-      }
+      // Send email notification to admin
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #16a34a; border-bottom: 2px solid #16a34a; padding-bottom: 10px;">
+            New Contact Form Submission
+          </h2>
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>Name:</strong> ${data.full_name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
+            <p><strong>Subject:</strong> ${data.subject || 'General Inquiry'}</p>
+          </div>
+          <div style="background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h3 style="margin-top: 0;">Message:</h3>
+            <p style="white-space: pre-wrap;">${data.message}</p>
+          </div>
+          <p style="color: #64748b; font-size: 12px; margin-top: 20px;">
+            This message was sent from the Zanzibar Vibe Tours website contact form.
+          </p>
+        </div>
+      `;
+
+      await supabase.functions.invoke('send-email', {
+        body: {
+          subject: `New Contact: ${data.subject || 'Website Inquiry'} - ${data.full_name}`,
+          html: emailHtml,
+          reply_to: data.email,
+          from_email: data.email,
+        },
+      });
 
       toast({
         title: "MESSAGE SENT",

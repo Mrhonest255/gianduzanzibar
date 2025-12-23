@@ -12,8 +12,6 @@ import {
   Image as ImageIcon,
   GripVertical,
   Trash2,
-  Sparkles,
-  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +29,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TOUR_CATEGORIES } from "@/lib/constants";
-import { generateTourDetails } from "@/lib/gemini";
 
 const tourSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -72,7 +69,6 @@ export default function AdminTourFormPage() {
   const [images, setImages] = useState<TourImage[]>([]);
   const [newImageUrls, setNewImageUrls] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const {
     register,
@@ -211,95 +207,6 @@ export default function AdminTourFormPage() {
     setNewImageUrls(newImageUrls.filter((_, i) => i !== index));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    setUploadingImages(true);
-    const newUrls: string[] = [];
-
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `tours/${fileName}`;
-
-        const { error: uploadError, data } = await supabase.storage
-          .from('tour-images')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('tour-images')
-          .getPublicUrl(filePath);
-
-        newUrls.push(publicUrl);
-      }
-
-      setNewImageUrls([...newImageUrls, ...newUrls]);
-      toast({
-        title: "Images Uploaded",
-        description: `Successfully uploaded ${newUrls.length} images.`,
-      });
-    } catch (error: any) {
-      console.error("Error uploading images:", error);
-      toast({
-        variant: "destructive",
-        title: "Upload Failed",
-        description: error.message || "Failed to upload images.",
-      });
-    } finally {
-      setUploadingImages(false);
-    }
-  };
-
-  const handleAIGenerate = async () => {
-    const tourName = watch("title");
-    if (!tourName || tourName.length < 3) {
-      toast({
-        variant: "destructive",
-        title: "Title Required",
-        description: "Please enter a tour title first to generate details.",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      const details = await generateTourDetails(tourName);
-      
-      // Update form values
-      if (details.title) setValue("title", details.title);
-      if (details.category) setValue("category", details.category);
-      if (details.location) setValue("location", details.location);
-      if (details.duration_hours) setValue("duration_hours", details.duration_hours);
-      if (details.price) setValue("price", details.price);
-      if (details.short_description) setValue("short_description", details.short_description);
-      if (details.long_description) setValue("long_description", details.long_description);
-      if (details.itinerary) setValue("itinerary", details.itinerary);
-      if (details.includes) setValue("includes", details.includes);
-      if (details.excludes) setValue("excludes", details.excludes);
-      if (details.pickup_info) setValue("pickup_info", details.pickup_info);
-      if (details.what_to_bring) setValue("what_to_bring", details.what_to_bring);
-
-      toast({
-        title: "AI Generation Successful",
-        description: "Tour details have been generated and filled.",
-      });
-    } catch (error: any) {
-      console.error("Error generating with AI:", error);
-      toast({
-        variant: "destructive",
-        title: "AI Generation Failed",
-        description: "Failed to generate tour details. Please try again.",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   const handleDeleteImage = async (imageId: string) => {
     try {
       const { error } = await supabase
@@ -337,34 +244,18 @@ export default function AdminTourFormPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/admin/tours")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="font-display text-3xl font-bold text-foreground">
-              {isEditing ? "Edit Tour" : "Add New Tour"}
-            </h1>
-            <p className="text-muted-foreground">
-              {isEditing ? "Update tour details and images" : "Create a new tour listing"}
-            </p>
-          </div>
-        </div>
-        <Button 
-          type="button" 
-          variant="outline" 
-          className="gap-2 border-primary text-primary hover:bg-primary/5"
-          onClick={handleAIGenerate}
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Sparkles className="h-4 w-4" />
-          )}
-          Generate with AI
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate("/admin/tours")}>
+          <ArrowLeft className="h-5 w-5" />
         </Button>
+        <div>
+          <h1 className="font-display text-3xl font-bold text-foreground">
+            {isEditing ? "Edit Tour" : "Add New Tour"}
+          </h1>
+          <p className="text-muted-foreground">
+            {isEditing ? "Update tour details and images" : "Create a new tour listing"}
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -566,43 +457,9 @@ export default function AdminTourFormPage() {
         <Card>
           <CardHeader>
             <CardTitle>Images</CardTitle>
-            <CardDescription>Add tour images (Upload or use URLs)</CardDescription>
+            <CardDescription>Add tour images (use URLs)</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-4 mb-6">
-              <Button
-                type="button"
-                variant="outline"
-                className="gap-2"
-                onClick={() => document.getElementById('image-upload')?.click()}
-                disabled={uploadingImages}
-              >
-                {uploadingImages ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="h-4 w-4" />
-                )}
-                Upload Images
-              </Button>
-              <input
-                id="image-upload"
-                type="file"
-                multiple
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className="gap-2"
-                onClick={handleAddImageUrl}
-              >
-                <ImageIcon className="h-4 w-4" />
-                Add Image URL
-              </Button>
-            </div>
-
             {/* Existing Images */}
             {images.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -646,6 +503,11 @@ export default function AdminTourFormPage() {
                 ))}
               </div>
             )}
+
+            <Button type="button" variant="outline" onClick={handleAddImageUrl}>
+              <ImageIcon className="h-4 w-4 mr-2" />
+              Add Image URL
+            </Button>
           </CardContent>
         </Card>
 
