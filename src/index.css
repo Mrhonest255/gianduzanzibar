@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Ocean-inspired color palette */
+    --background: 200 20% 98%;
+    --foreground: 210 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 30% 15%;
+
+    /* Ocean Blue Primary */
+    --primary: 195 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 195 75% 55%;
+
+    /* Sandy Warm Secondary */
+    --secondary: 35 45% 92%;
+    --secondary-foreground: 35 50% 25%;
+
+    /* Muted Ocean Tones */
+    --muted: 200 25% 94%;
+    --muted-foreground: 210 15% 45%;
+
+    /* Accent - Coral/Sunset */
+    --accent: 15 85% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 25% 88%;
+    --input: 200 25% 88%;
+    --ring: 195 80% 40%;
+
+    --radius: 0.75rem;
+
+    /* Custom design tokens */
+    --ocean-light: 195 65% 95%;
+    --ocean-medium: 195 70% 85%;
+    --sand-light: 35 50% 96%;
+    --sand-medium: 35 45% 88%;
+    --sunset-orange: 25 90% 55%;
+    --sunset-pink: 350 70% 65%;
+    --forest-green: 155 45% 35%;
+    
+    /* Gradients */
+    --gradient-ocean: linear-gradient(135deg, hsl(195, 80%, 40%) 0%, hsl(210, 70%, 50%) 100%);
+    --gradient-sunset: linear-gradient(135deg, hsl(25, 90%, 55%) 0%, hsl(350, 70%, 65%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(195, 65%, 95%) 0%, hsl(200, 20%, 98%) 100%);
+    --gradient-sand: linear-gradient(135deg, hsl(35, 50%, 96%) 0%, hsl(35, 45%, 88%) 100%);
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(195 80% 40% / 0.15);
+    --shadow-medium: 0 8px 30px -6px hsl(195 80% 40% / 0.2);
+    --shadow-glow: 0 0 40px hsl(195 75% 55% / 0.3);
+    --shadow-card: 0 2px 12px -2px hsl(210 30% 15% / 0.08);
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 30% 15%;
+    --sidebar-primary: 195 80% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 195 65% 95%;
+    --sidebar-accent-foreground: 195 80% 30%;
+    --sidebar-border: 200 25% 88%;
+    --sidebar-ring: 195 80% 40%;
+  }
+
+  @keyframes ken-burns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+  }
+
+  .animate-ken-burns {
+    animation: ken-burns 20s ease-in-out infinite alternate;
+  }
+
+  .text-primary-glow {
+    color: hsl(var(--primary));
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+  }
+
+  .dark {
+    --background: 215 35% 10%;
+    --foreground: 200 20% 95%;
+
+    --card: 215 35% 12%;
+    --card-foreground: 200 20% 95%;
+
+    --popover: 215 35% 12%;
+    --popover-foreground: 200 20% 95%;
+
+    --primary: 195 75% 55%;
+    --primary-foreground: 215 35% 10%;
+    --primary-glow: 195 80% 65%;
+
+    --secondary: 215 30% 18%;
+    --secondary-foreground: 200 20% 90%;
+
+    --muted: 215 30% 18%;
+    --muted-foreground: 200 15% 60%;
+
+    --accent: 15 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 30% 20%;
+    --input: 215 30% 20%;
+    --ring: 195 75% 55%;
+
+    --ocean-light: 215 35% 15%;
+    --ocean-medium: 215 30% 22%;
+    --sand-light: 35 20% 15%;
+    --sand-medium: 35 15% 20%;
+
+    --sidebar-background: 215 35% 10%;
+    --sidebar-foreground: 200 20% 95%;
+    --sidebar-primary: 195 75% 55%;
+    --sidebar-primary-foreground: 215 35% 10%;
+    --sidebar-accent: 215 30% 18%;
+    --sidebar-accent-foreground: 195 75% 55%;
+    --sidebar-border: 215 30% 20%;
+    --sidebar-ring: 195 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .text-gradient-ocean {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-ocean);
+  }
+
+  .text-gradient-sunset {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-sunset);
+  }
+
+  .bg-gradient-ocean {
+    background-image: var(--gradient-ocean);
+  }
+
+  .bg-gradient-sunset {
+    background-image: var(--gradient-sunset);
+  }
+
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Premium glass effect */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md border border-border/50;
+  }
+
+  /* Animated underline */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    @apply absolute bottom-0 left-0 h-0.5 w-0 bg-primary transition-all duration-300;
+    content: '';
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+}
