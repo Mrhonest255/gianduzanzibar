@@ -68,11 +68,19 @@ export default function ToursPage() {
   return (
     <>
       <Helmet>
-        <title>Tours & Experiences | {COMPANY.name}</title>
+        <title>Best Zanzibar Tours & Safari Experiences 2025 | {COMPANY.name}</title>
         <meta
           name="description"
-          content="Explore our collection of Zanzibar tours and experiences. From cultural heritage tours to underwater adventures, find your perfect island experience."
+          content="Book the best Zanzibar tours and safari experiences. Explore Stone Town, Prison Island, Safari Blue, Spice Farm tours, Jozani Forest, Mnemba Island snorkeling & more. Expert local guides, best prices guaranteed."
         />
+        <meta name="keywords" content="Zanzibar tours, Zanzibar safari, Stone Town tour, Prison Island tour, Safari Blue Zanzibar, Spice Farm tour, Jozani Forest, Mnemba Island, Nakupenda sandbank, Zanzibar excursions, Tanzania tours, best Zanzibar tours 2025, cheap Zanzibar tours, private tours Zanzibar" />
+        <meta property="og:title" content="Best Zanzibar Tours & Safari Experiences | Giandu Tours" />
+        <meta property="og:description" content="Discover paradise with authentic Zanzibar tours. Stone Town heritage, tropical beaches, spice plantations, and marine adventures. Book with local experts today!" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1200&q=80" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://giandutours.com/tours" />
       </Helmet>
       <Layout>
         {/* Hero */}

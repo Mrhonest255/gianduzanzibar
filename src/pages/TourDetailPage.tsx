@@ -207,8 +207,40 @@ export default function TourDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{tour.title} | {COMPANY.name}</title>
-        <meta name="description" content={tour.short_description || ""} />
+        <title>{tour.title} - Book Now | {COMPANY.name}</title>
+        <meta name="description" content={`${tour.short_description} Book ${tour.title} in Zanzibar with expert local guides. Duration: ${tour.duration_hours} hours. From $${tour.price} per person. Best price guaranteed!`} />
+        <meta name="keywords" content={`${tour.title}, Zanzibar ${tour.category} tour, ${tour.location} tour, book ${tour.title}, Zanzibar excursion, Tanzania tours`} />
+        <meta property="og:title" content={`${tour.title} | Giandu Tours Zanzibar`} />
+        <meta property="og:description" content={tour.short_description || `Experience ${tour.title} with professional local guides in Zanzibar`} />
+        <meta property="og:image" content={tour.image || "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1200&q=80"} />
+        <meta property="og:type" content="product" />
+        <meta property="product:price:amount" content={String(tour.price)} />
+        <meta property="product:price:currency" content="USD" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`https://giandutours.com/tours/${tour.slug}`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "TouristTrip",
+            "name": tour.title,
+            "description": tour.short_description,
+            "image": tour.image,
+            "touristType": "Adventure",
+            "offers": {
+              "@type": "Offer",
+              "price": tour.price,
+              "priceCurrency": "USD",
+              "availability": "https://schema.org/InStock"
+            },
+            "provider": {
+              "@type": "TouristInformationCenter",
+              "name": COMPANY.name,
+              "telephone": COMPANY.phone,
+              "email": COMPANY.email
+            }
+          })}
+        </script>
       </Helmet>
       <Layout>
         {/* Hero Section */}
@@ -442,14 +474,25 @@ export default function TourDetailPage() {
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Preferred Date</Label>
-                          <Input 
-                            {...register("tour_date")} 
-                            type="date" 
-                            className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
-                          />
-                          {errors.tour_date && <p className="text-xs text-red-500 font-bold ml-2">{errors.tour_date.message}</p>}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Country</Label>
+                            <Input 
+                              {...register("country")} 
+                              placeholder="United States" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
+                            />
+                            {errors.country && <p className="text-xs text-red-500 font-bold ml-2">{errors.country.message}</p>}
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Preferred Date</Label>
+                            <Input 
+                              {...register("tour_date")} 
+                              type="date" 
+                              className="h-14 rounded-xl bg-slate-50 border-slate-100 focus:ring-primary/20"
+                            />
+                            {errors.tour_date && <p className="text-xs text-red-500 font-bold ml-2">{errors.tour_date.message}</p>}
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
