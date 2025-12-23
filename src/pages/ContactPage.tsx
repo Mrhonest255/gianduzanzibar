@@ -39,6 +39,7 @@ export default function ContactPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
+      // Save to database
       const { error } = await supabase.from("messages").insert({
         full_name: data.full_name,
         email: data.email,
@@ -47,6 +48,26 @@ export default function ContactPage() {
         message: data.message,
       });
       if (error) throw error;
+
+      // Send email notification
+      try {
+        await supabase.functions.invoke("send-email", {
+          body: {
+            type: "contact",
+            data: {
+              full_name: data.full_name,
+              email: data.email,
+              phone: data.phone,
+              subject: data.subject,
+              message: data.message,
+            },
+          },
+        });
+      } catch (emailError) {
+        console.error("Email notification failed:", emailError);
+        // Don't fail the whole submission if email fails
+      }
+
       toast({
         title: "MESSAGE SENT",
         description: "We've received your message and will get back to you shortly.",

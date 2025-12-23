@@ -91,6 +91,31 @@ export default function TourDetailPage() {
 
       if (error) throw error;
 
+      // Send booking confirmation email
+      const totalGuests = data.adults + (data.children || 0);
+      const totalPrice = tour.price ? tour.price * totalGuests : 0;
+      
+      try {
+        await supabase.functions.invoke("send-email", {
+          body: {
+            type: "booking",
+            data: {
+              full_name: data.full_name,
+              email: data.email,
+              phone: data.phone,
+              tour_title: tour.title,
+              tour_date: data.tour_date,
+              num_guests: totalGuests,
+              total_price: totalPrice,
+              booking_reference: booking.booking_reference,
+            },
+          },
+        });
+      } catch (emailError) {
+        console.error("Email notification failed:", emailError);
+        // Don't fail the whole booking if email fails
+      }
+
       toast({
         title: "Booking Submitted!",
         description: `Your booking reference is ${booking.booking_reference}`,
