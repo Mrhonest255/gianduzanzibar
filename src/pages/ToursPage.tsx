@@ -83,26 +83,66 @@ export default function ToursPage() {
         <link rel="canonical" href="https://giandutours.com/tours" />
       </Helmet>
       <Layout>
-        {/* Hero */}
-        <section className="pt-32 pb-16 bg-gradient-hero">
-          <div className="container">
+        {/* Premium Hero Section */}
+        <section className="relative pt-48 pb-24 overflow-hidden bg-slate-950">
+          {/* Background with Ken Burns */}
+          <div className="absolute inset-0 z-0">
+            <div
+              className="absolute inset-0 bg-cover bg-center animate-ken-burns scale-110"
+              style={{
+                backgroundImage: `url(https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1920&q=80)`,
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/50 to-slate-950" />
+          </div>
+
+          {/* Animated Background Effects */}
+          <motion.div
+            animate={{ y: [-20, 20, -20], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/20 blur-3xl"
+          />
+          <motion.div
+            animate={{ y: [20, -20, 20], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-accent/20 blur-3xl"
+          />
+
+          <div className="container relative z-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center max-w-3xl mx-auto"
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-4xl mx-auto"
             >
-              <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Explore Zanzibar Tours
+              {/* Premium Badge */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-primary text-sm font-medium mb-8"
+              >
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="tracking-widest uppercase">Discover Experiences</span>
+              </motion.div>
+
+              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight">
+                Explore
+                <span className="block mt-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Zanzibar Tours
+                </span>
               </h1>
-              <p className="text-muted-foreground text-lg">
-                Discover the best experiences the Spice Island has to offer. From cultural heritage to underwater adventures.
+              
+              <p className="text-white/70 text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed">
+                Discover the best experiences the Spice Island has to offer. 
+                From cultural heritage to underwater adventures.
               </p>
             </motion.div>
           </div>
         </section>
 
-        {/* Filters */}
-        <section className="py-8 bg-card border-b border-border sticky top-16 z-30">
+        {/* Premium Filters Bar */}
+        <section className="py-6 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 sticky top-20 z-30">
           <div className="container">
             <div className="flex flex-col md:flex-row gap-4 items-center">
               {/* Search */}
@@ -151,9 +191,15 @@ export default function ToursPage() {
           </div>
         </section>
 
-        {/* Tours Grid */}
-        <section className="py-16 bg-background">
-          <div className="container">
+        {/* Premium Tours Grid */}
+        <section className="py-20 bg-slate-950 relative">
+          {/* Background Effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+          </div>
+
+          <div className="container relative z-10">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[...Array(6)].map((_, i) => (
