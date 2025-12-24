@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const RESEND_API_KEY = "re_4RHs4yBN_JfDeFUyNP2C4NrDFexvBJMko";
 
 interface EmailRequest {
   to?: string;
@@ -26,38 +27,34 @@ serve(async (req) => {
       to = "info@zanzibartravelhelper.com",
       subject,
       html,
-      from_name = "Zanzibar Vibe Tours",
-      from_email,
+      from_name = "Giandu Tours",
       reply_to,
     }: EmailRequest = await req.json();
 
-    // SMTP Configuration
-    const client = new SMTPClient({
-      connection: {
-        hostname: "mail.spacemail.com",
-        port: 465,
-        tls: true,
-        auth: {
-          username: "info@zanzibartravelhelper.com",
-          password: "Hacker@255",
-        },
+    // Send email using Resend API
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${RESEND_API_KEY}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        from: `${from_name} <onboarding@resend.dev>`,
+        to: [to],
+        subject: subject,
+        html: html,
+        reply_to: reply_to,
+      }),
     });
 
-    // Send email
-    await client.send({
-      from: `${from_name} <info@zanzibartravelhelper.com>`,
-      to: to,
-      subject: subject,
-      content: "auto",
-      html: html,
-      replyTo: reply_to || from_email,
-    });
+    const data = await response.json();
 
-    await client.close();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send email");
+    }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Email sent successfully" }),
+      JSON.stringify({ success: true, message: "Email sent successfully", data }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
