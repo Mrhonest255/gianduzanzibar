@@ -79,11 +79,12 @@ export default function TrackBookingPage() {
     setSearched(true);
 
     try {
+      // Use ilike for case-insensitive email matching
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
-        .eq("booking_reference", bookingRef.trim().toUpperCase())
-        .eq("email", email.trim().toLowerCase())
+        .ilike("booking_reference", bookingRef.trim())
+        .ilike("email", email.trim())
         .maybeSingle();
 
       if (error) throw error;
