@@ -9,8 +9,8 @@ if (!GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Use gemini-1.5-pro - correct model name for current API
-const GEMINI_MODEL = "gemini-1.5-pro";
+// Use Gemini 2.0 Flash - latest fast model
+const GEMINI_MODEL = "gemini-2.0-flash-exp";
 
 export interface GeneratedTour {
   title: string;
