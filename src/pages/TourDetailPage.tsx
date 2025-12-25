@@ -377,42 +377,55 @@ export default function TourDetailPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
               {/* Main Content */}
               <div className="lg:col-span-8 space-y-16">
-                {/* Gallery/Main Image */}
+                {/* Gallery */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  className="relative rounded-[3rem] overflow-hidden shadow-premium border border-white"
+                  className="space-y-4"
                 >
-                  <img
-                    src={tour.image || "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80"}
-                    alt={tour.title}
-                    className="w-full aspect-video object-cover"
-                  />
+                  {/* Main Image */}
+                  <div className="relative rounded-[3rem] overflow-hidden shadow-premium border border-white">
+                    <img
+                      src={images[0]?.path || tour.image || "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80"}
+                      alt={tour.title}
+                      className="w-full aspect-video object-cover"
+                    />
+                  </div>
+                  
+                  {/* Thumbnail Gallery */}
+                  {images.length > 1 && (
+                    <div className="grid grid-cols-4 gap-4">
+                      {images.slice(1, 5).map((image, i) => (
+                        <div key={image.id} className="relative rounded-2xl overflow-hidden border border-white shadow-lg aspect-square">
+                          <img
+                            src={image.path}
+                            alt={image.alt_text || `${tour.title} - Image ${i + 2}`}
+                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
 
                 {/* Description */}
                 <div className="glass-morphism rounded-[3rem] p-10 md:p-16 border border-white">
                   <h2 className="font-display text-4xl font-black text-slate-900 mb-8 tracking-tight">THE EXPERIENCE</h2>
                   <div className="prose prose-lg max-w-none text-slate-600 font-medium leading-relaxed">
-                    {tour.description?.split('\n').map((paragraph, i) => (
+                    {(tour.long_description || tour.short_description || 'Experience the magic of Zanzibar with this unforgettable tour.')?.split('\n').map((paragraph, i) => (
                       <p key={i} className="mb-6 last:mb-0">{paragraph}</p>
                     ))}
                   </div>
                 </div>
 
-                {/* Highlights */}
-                {tour.highlights && tour.highlights.length > 0 && (
+                {/* Itinerary */}
+                {tour.itinerary && (
                   <div className="glass-morphism rounded-[3rem] p-10 md:p-16 border border-white">
-                    <h2 className="font-display text-4xl font-black text-slate-900 mb-10 tracking-tight">HIGHLIGHTS</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {tour.highlights.map((highlight, i) => (
-                        <div key={i} className="flex items-start gap-4 group">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                            <Check className="h-4 w-4" />
-                          </div>
-                          <p className="text-slate-700 font-bold leading-tight pt-1">{highlight}</p>
-                        </div>
+                    <h2 className="font-display text-4xl font-black text-slate-900 mb-10 tracking-tight">ITINERARY</h2>
+                    <div className="prose prose-lg max-w-none text-slate-600 font-medium leading-relaxed">
+                      {tour.itinerary.split('\n').map((line, i) => (
+                        <p key={i} className="mb-4 last:mb-0">{line}</p>
                       ))}
                     </div>
                   </div>
@@ -426,12 +439,14 @@ export default function TourDetailPage() {
                       INCLUDED
                     </h3>
                     <ul className="space-y-4">
-                      {tour.inclusions?.map((item, i) => (
+                      {tour.includes ? tour.includes.split(',').map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
                           <Check className="h-4 w-4 text-primary" />
-                          {item}
+                          {item.trim()}
                         </li>
-                      ))}
+                      )) : (
+                        <li className="text-slate-400">Contact us for details</li>
+                      )}
                     </ul>
                   </div>
                   <div className="glass-morphism rounded-[3rem] p-10 border border-white">
@@ -440,12 +455,14 @@ export default function TourDetailPage() {
                       NOT INCLUDED
                     </h3>
                     <ul className="space-y-4">
-                      {tour.exclusions?.map((item, i) => (
+                      {tour.excludes ? tour.excludes.split(',').map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-slate-400 font-medium">
                           <X className="h-4 w-4 text-slate-300" />
-                          {item}
+                          {item.trim()}
                         </li>
-                      ))}
+                      )) : (
+                        <li className="text-slate-400">Contact us for details</li>
+                      )}
                     </ul>
                   </div>
                 </div>
