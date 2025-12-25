@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,11 @@ import {
   Image as ImageIcon,
   GripVertical,
   Trash2,
+  Sparkles,
+  Wand2,
+  Loader2,
+  Search,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +34,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { TOUR_CATEGORIES } from "@/lib/constants";
+import { enhanceExistingTour, optimizeTourForSEO, type GeneratedTour } from "@/lib/gemini";
 
 const tourSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -69,6 +75,9 @@ export default function AdminTourFormPage() {
   const [images, setImages] = useState<TourImage[]>([]);
   const [newImageUrls, setNewImageUrls] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [isAIEnhancing, setIsAIEnhancing] = useState(false);
+  const [enhanceType, setEnhanceType] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -231,6 +240,145 @@ export default function AdminTourFormPage() {
     }
   };
 
+  // AI Enhancement Handler
+  const handleAIEnhance = async (type: "full" | "seo" | "sales") => {
+    setIsAIEnhancing(true);
+    setEnhanceType(type);
+
+    try {
+      const currentData = {
+        title: watch("title"),
+        slug: watch("slug"),
+        category: watch("category"),
+        location: watch("location"),
+        duration_hours: watch("duration_hours"),
+        price: watch("price"),
+        currency: watch("currency"),
+        short_description: watch("short_description"),
+        long_description: watch("long_description"),
+        itinerary: watch("itinerary"),
+        includes: watch("includes"),
+        excludes: watch("excludes"),
+        pickup_info: watch("pickup_info"),
+        what_to_bring: watch("what_to_bring"),
+        is_featured: watch("is_featured"),
+        is_active: watch("is_active"),
+      };
+
+      toast({
+        title: "AI Enhancement Started",
+        description: `Optimizing tour for ${type}...`,
+      });
+
+      const enhanced = await enhanceExistingTour(currentData as Partial<GeneratedTour>, type);
+
+      // Update form values with enhanced content
+      setValue("title", enhanced.title);
+      setValue("short_description", enhanced.short_description);
+      setValue("long_description", enhanced.long_description);
+      setValue("itinerary", enhanced.itinerary);
+      setValue("includes", enhanced.includes);
+      setValue("excludes", enhanced.excludes);
+      setValue("what_to_bring", enhanced.what_to_bring);
+      setValue("pickup_info", enhanced.pickup_info);
+      if (enhanced.price) setValue("price", enhanced.price);
+
+      toast({
+        title: "AI Enhancement Complete!",
+        description: `Tour has been optimized for ${type}. Review the changes and save.`,
+      });
+    } catch (error: any) {
+      console.error("AI Enhancement error:", error);
+      toast({
+        variant: "destructive",
+        title: "Enhancement Failed",
+        description: error.message || "Failed to enhance with AI.",
+      });
+    } finally {
+      setIsAIEnhancing(false);
+      setEnhanceType(null);
+    }
+  };
+
+  // File Upload Handler
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingImages(true);
+
+    try {
+      const uploadedUrls: string[] = [];
+
+      for (const file of Array.from(files)) {
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+          toast({
+            variant: "destructive",
+            title: "Invalid File",
+            description: `${file.name} is not an image file.`,
+          });
+          continue;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            variant: "destructive",
+            title: "File Too Large",
+            description: `${file.name} exceeds 5MB limit.`,
+          });
+          continue;
+        }
+
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `tour-images/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("tours")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          toast({
+            variant: "destructive",
+            title: "Upload Failed",
+            description: `Failed to upload ${file.name}.`,
+          });
+          continue;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from("tours")
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(urlData.publicUrl);
+      }
+
+      if (uploadedUrls.length > 0) {
+        setNewImageUrls([...newImageUrls, ...uploadedUrls]);
+        toast({
+          title: "Images Uploaded",
+          description: `${uploadedUrls.length} image(s) uploaded successfully.`,
+        });
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Failed to upload images.",
+      });
+    } finally {
+      setUploadingImages(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const title = watch("title");
 
   if (isLoading) {
@@ -244,18 +392,103 @@ export default function AdminTourFormPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/admin/tours")}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">
-            {isEditing ? "Edit Tour" : "Add New Tour"}
-          </h1>
-          <p className="text-muted-foreground">
-            {isEditing ? "Update tour details and images" : "Create a new tour listing"}
-          </p>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/admin/tours")}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div className="flex-1">
+            <h1 className="font-display text-3xl font-bold text-foreground">
+              {isEditing ? "Edit Tour" : "Add New Tour"}
+            </h1>
+            <p className="text-muted-foreground">
+              {isEditing ? "Update tour details and images" : "Create a new tour listing"}
+            </p>
+          </div>
         </div>
+
+        {/* AI Enhancement Toolbar */}
+        {isEditing && (
+          <Card className="bg-gradient-to-r from-purple-500/10 via-yellow-500/10 to-green-500/10 border-purple-500/20">
+            <CardContent className="py-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  <span>AI Enhancement:</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAIEnhance("full")}
+                  disabled={isAIEnhancing}
+                  className="bg-background/50"
+                >
+                  {isAIEnhancing && enhanceType === "full" ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Wand2 className="h-4 w-4 mr-2 text-purple-500" />
+                  )}
+                  Full Enhancement
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAIEnhance("seo")}
+                  disabled={isAIEnhancing}
+                  className="bg-background/50"
+                >
+                  {isAIEnhancing && enhanceType === "seo" ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4 mr-2 text-blue-500" />
+                  )}
+                  SEO Optimize
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAIEnhance("sales")}
+                  disabled={isAIEnhancing}
+                  className="bg-background/50"
+                >
+                  {isAIEnhancing && enhanceType === "sales" ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <TrendingUp className="h-4 w-4 mr-2 text-green-500" />
+                  )}
+                  Sales Boost
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* AI Creator Link for New Tours */}
+        {!isEditing && (
+          <Card className="bg-gradient-to-r from-yellow-500/10 to-purple-500/10 border-yellow-500/20">
+            <CardContent className="py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm">Want AI to create this tour for you?</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/admin/ai-tour")}
+                  className="bg-background/50"
+                >
+                  <Wand2 className="h-4 w-4 mr-2 text-purple-500" />
+                  Use AI Tour Creator
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -457,7 +690,7 @@ export default function AdminTourFormPage() {
         <Card>
           <CardHeader>
             <CardTitle>Images</CardTitle>
-            <CardDescription>Add tour images (use URLs)</CardDescription>
+            <CardDescription>Add tour images via upload or URL</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Existing Images */}
@@ -504,10 +737,37 @@ export default function AdminTourFormPage() {
               </div>
             )}
 
-            <Button type="button" variant="outline" onClick={handleAddImageUrl}>
-              <ImageIcon className="h-4 w-4 mr-2" />
-              Add Image URL
-            </Button>
+            {/* Upload and URL buttons */}
+            <div className="flex flex-wrap gap-3">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                multiple
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="default"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImages}
+              >
+                {uploadingImages ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="h-4 w-4 mr-2" />
+                )}
+                {uploadingImages ? "Uploading..." : "Upload Images"}
+              </Button>
+              <Button type="button" variant="outline" onClick={handleAddImageUrl}>
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Add Image URL
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Upload images (max 5MB each) or add URLs from external sources
+            </p>
           </CardContent>
         </Card>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -10,6 +10,9 @@ import {
   Star,
   MoreVertical,
   Image as ImageIcon,
+  Sparkles,
+  Wand2,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +36,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { enhanceExistingTour, type GeneratedTour } from "@/lib/gemini";
 
 interface Tour {
   id: string;
@@ -53,7 +57,9 @@ export default function AdminToursPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [enhancingTourId, setEnhancingTourId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTours();
@@ -168,6 +174,63 @@ export default function AdminToursPage() {
     }
   };
 
+  const handleAIEnhance = async (tour: Tour, enhanceType: "full" | "seo" | "sales") => {
+    setEnhancingTourId(tour.id);
+    try {
+      // First fetch full tour details
+      const { data: fullTour, error: fetchError } = await supabase
+        .from("tours")
+        .select("*")
+        .eq("id", tour.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      toast({
+        title: "Enhancing with AI...",
+        description: `Optimizing "${tour.title}" for ${enhanceType}`,
+      });
+
+      const enhancedTour = await enhanceExistingTour(fullTour as Partial<GeneratedTour>, enhanceType);
+
+      // Update the tour in the database
+      const { error: updateError } = await supabase
+        .from("tours")
+        .update({
+          title: enhancedTour.title,
+          short_description: enhancedTour.short_description,
+          long_description: enhancedTour.long_description,
+          itinerary: enhancedTour.itinerary,
+          includes: enhancedTour.includes,
+          excludes: enhancedTour.excludes,
+          what_to_bring: enhancedTour.what_to_bring,
+          seo_title: enhancedTour.seo_title,
+          seo_description: enhancedTour.seo_description,
+          price: enhancedTour.price,
+        })
+        .eq("id", tour.id);
+
+      if (updateError) throw updateError;
+
+      // Refresh tours
+      fetchTours();
+
+      toast({
+        title: "Tour Enhanced!",
+        description: `${tour.title} has been optimized with AI.`,
+      });
+    } catch (error: any) {
+      console.error("Error enhancing tour:", error);
+      toast({
+        variant: "destructive",
+        title: "Enhancement Failed",
+        description: error.message || "Failed to enhance tour with AI.",
+      });
+    } finally {
+      setEnhancingTourId(null);
+    }
+  };
+
   const filteredTours = tours.filter(
     (tour) =>
       tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -183,12 +246,20 @@ export default function AdminToursPage() {
           <h1 className="font-display text-3xl font-bold text-foreground">Tours</h1>
           <p className="text-muted-foreground">Manage your tour offerings</p>
         </div>
-        <Button asChild>
-          <Link to="/admin/tours/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Tour
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="bg-gradient-to-r from-yellow-500/10 to-purple-500/10 border-yellow-500/30 hover:border-yellow-500/50">
+            <Link to="/admin/ai-tour">
+              <Sparkles className="h-4 w-4 mr-2 text-yellow-500" />
+              Create with AI
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/admin/tours/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Tour
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -281,11 +352,31 @@ export default function AdminToursPage() {
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreVertical className="h-4 w-4" />
+                          <Button variant="ghost" size="sm" disabled={enhancingTourId === tour.id}>
+                            {enhancingTourId === tour.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <MoreVertical className="h-4 w-4" />
+                            )}
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(`/admin/ai-tour/${tour.id}`)}>
+                            <Sparkles className="h-4 w-4 mr-2 text-yellow-500" />
+                            Edit with AI
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAIEnhance(tour, "full")}>
+                            <Wand2 className="h-4 w-4 mr-2 text-purple-500" />
+                            AI Full Enhancement
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAIEnhance(tour, "seo")}>
+                            <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
+                            AI SEO Optimize
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAIEnhance(tour, "sales")}>
+                            <Sparkles className="h-4 w-4 mr-2 text-green-500" />
+                            AI Sales Boost
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => toggleFeatured(tour)}>
                             <Star className="h-4 w-4 mr-2" />
                             {tour.is_featured ? "Remove Featured" : "Make Featured"}

@@ -12,6 +12,7 @@ import {
   X,
   ChevronRight,
   Home,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +21,7 @@ import { COMPANY } from "@/lib/constants";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "AI Tour Creator", href: "/admin/ai-tour", icon: Sparkles },
   { name: "Tours", href: "/admin/tours", icon: Map },
   { name: "Bookings", href: "/admin/bookings", icon: Calendar },
   { name: "Messages", href: "/admin/messages", icon: MessageSquare },

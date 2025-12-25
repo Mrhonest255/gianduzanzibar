@@ -5,6 +5,7 @@ import { Menu, X, Phone, Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COMPANY, NAVIGATION } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -84,7 +85,16 @@ export function Navbar() {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Language Selector */}
+            <LanguageSelector 
+              variant="icon" 
+              className={cn(
+                "rounded-full h-10 w-10",
+                isScrolled ? "text-foreground hover:bg-primary/10" : "text-white hover:bg-white/10"
+              )}
+            />
+            
             {/* WhatsApp CTA */}
             <Button
               asChild

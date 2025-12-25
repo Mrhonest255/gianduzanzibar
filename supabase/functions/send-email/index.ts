@@ -5,7 +5,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const RESEND_API_KEY = "re_4RHs4yBN_JfDeFUyNP2C4NrDFexvBJMko";
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || "re_4RHs4yBN_JfDeFUyNP2C4NrDFexvBJMko";
+const ADMIN_EMAIL = "info@giandutoursandsafari.com";
+const FROM_DOMAIN = "giandutoursandsafari.com";
 
 interface EmailRequest {
   to?: string;
@@ -24,14 +26,14 @@ serve(async (req) => {
 
   try {
     const {
-      to = "info@zanzibartravelhelper.com",
+      to = ADMIN_EMAIL,
       subject,
       html,
-      from_name = "Giandu Tours",
+      from_name = "Giandu Tours & Safari",
       reply_to,
     }: EmailRequest = await req.json();
 
-    // Send email using Resend API
+    // Send email using Resend API with verified domain
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -39,11 +41,11 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${from_name} <onboarding@resend.dev>`,
+        from: `${from_name} <noreply@${FROM_DOMAIN}>`,
         to: [to],
         subject: subject,
         html: html,
-        reply_to: reply_to,
+        reply_to: reply_to || ADMIN_EMAIL,
       }),
     });
 
