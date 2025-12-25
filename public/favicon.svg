@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#15803d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad1)"/>
+  <!-- Palm tree trunk -->
+  <path d="M256 380 L256 280 Q256 260 260 240" stroke="#8B4513" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <!-- Palm leaves -->
+  <path d="M256 260 Q200 200 140 220" stroke="#22c55e" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M256 260 Q210 180 160 150" stroke="#22c55e" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M256 260 Q256 170 256 120" stroke="#22c55e" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M256 260 Q302 180 352 150" stroke="#22c55e" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M256 260 Q312 200 372 220" stroke="#22c55e" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <!-- Sun -->
+  <circle cx="380" cy="140" r="40" fill="#fbbf24"/>
+  <!-- Waves -->
+  <path d="M100 400 Q150 380 200 400 Q250 420 300 400 Q350 380 400 400" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Letter G -->
+  <text x="256" y="470" font-family="Arial Black, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">GIANDU</text>
+</svg>

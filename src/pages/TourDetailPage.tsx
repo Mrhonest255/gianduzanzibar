@@ -92,9 +92,9 @@ export default function TourDetailPage() {
 
       if (error) throw error;
 
-      // Send email notification to admin
+      // Send email notification to admin AND customer confirmation
       const totalGuests = data.adults + data.children;
-      const emailHtml = `
+      const adminEmailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #16a34a; border-bottom: 2px solid #16a34a; padding-bottom: 10px;">
             🎉 New Booking Received!
@@ -127,14 +127,68 @@ export default function TourDetailPage() {
         </div>
       `;
 
-      await supabase.functions.invoke('send-email', {
-        body: {
-          subject: `New Booking: ${tour.title} - ${booking.booking_reference}`,
-          html: emailHtml,
-          reply_to: data.email,
-          from_email: data.email,
-        },
-      });
+      // Customer confirmation email
+      const customerEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #16a34a; border-bottom: 2px solid #16a34a; padding-bottom: 10px;">
+            ✅ Booking Confirmation
+          </h2>
+          <p style="font-size: 16px;">Dear ${data.full_name},</p>
+          <p>Thank you for booking with <strong>Giandu Tours & Safari</strong>! We have received your booking request and will contact you shortly to confirm the details.</p>
+          
+          <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <p style="margin: 0; font-size: 18px;"><strong>Your Booking Reference:</strong> ${booking.booking_reference}</p>
+          </div>
+          
+          <h3 style="color: #334155;">Booking Summary</h3>
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 10px 0;">
+            <p><strong>Tour:</strong> ${tour.title}</p>
+            <p><strong>Date:</strong> ${data.tour_date}</p>
+            <p><strong>Guests:</strong> ${data.adults} Adults${data.children > 0 ? `, ${data.children} Children` : ''}</p>
+          </div>
+          
+          <h3 style="color: #334155;">What's Next?</h3>
+          <ul style="color: #475569;">
+            <li>Our team will review your booking and contact you within 24 hours</li>
+            <li>You can track your booking status using your reference number</li>
+            <li>If you have any questions, feel free to reply to this email or contact us via WhatsApp</li>
+          </ul>
+          
+          <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0; color: #92400e;">
+              <strong>📞 Need help?</strong><br/>
+              WhatsApp: +255 123 456 789<br/>
+              Email: info@giandutoursandsafari.com
+            </p>
+          </div>
+          
+          <p style="color: #64748b; font-size: 12px; margin-top: 20px;">
+            Thank you for choosing Giandu Tours & Safari. We look forward to making your Zanzibar adventure unforgettable!
+          </p>
+        </div>
+      `;
+
+      try {
+        const emailResponse = await supabase.functions.invoke('send-email', {
+          body: {
+            subject: `New Booking: ${tour.title} - ${booking.booking_reference}`,
+            html: adminEmailHtml,
+            reply_to: data.email,
+            customer_email: data.email,
+            customer_subject: `Booking Confirmation - ${tour.title} | Giandu Tours & Safari`,
+            customer_html: customerEmailHtml,
+          },
+        });
+        
+        console.log('Email response:', emailResponse);
+        
+        if (emailResponse.error) {
+          console.error('Email sending failed:', emailResponse.error);
+        }
+      } catch (emailError) {
+        console.error('Email function error:', emailError);
+        // Don't fail the booking if email fails
+      }
 
       toast({
         title: "Booking Submitted!",
