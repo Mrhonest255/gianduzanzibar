@@ -11,7 +11,7 @@ export const COMPANY = {
 export const NAVIGATION = [
   { name: "Home", href: "/" },
   { name: "Tours", href: "/tours" },
-  { name: "Mainland Safaris", href: "/mainland-safaris" },
+  { name: "Safari Tanzania", href: "/safari-tanzania" },
   { name: "Transfers", href: "/transfers" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
