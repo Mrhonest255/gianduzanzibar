@@ -189,7 +189,7 @@ export default function AdminBookingDetailPage() {
               <p style="margin-top: 20px;">Best regards,<br>Giandu Tours Team</p>
             </div>
           `,
-          reply_to: "info@zanzibartravelhelper.com",
+          reply_to: "info@giandutoursandsafari.com",
         },
       });
 

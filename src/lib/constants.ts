@@ -3,7 +3,7 @@ export const COMPANY = {
   shortName: "Giandu Tours",
   phone: "+255620636827",
   whatsappLink: "https://wa.me/255620636827",
-  email: "info@zanzibartravelhelper.com",
+  email: "info@giandutoursandsafari.com",
   address: "Stone Town, Zanzibar, Tanzania",
   tagline: "Discover Paradise with Every Journey",
 } as const;

@@ -39,7 +39,7 @@ export default function Index() {
             "description": "Best Zanzibar tours and safari experiences with local expert guides",
             "url": "https://giandutours.com",
             "telephone": "+255620636827",
-            "email": "info@zanzibartravelhelper.com",
+            "email": "info@giandutoursandsafari.com",
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "Stone Town",
