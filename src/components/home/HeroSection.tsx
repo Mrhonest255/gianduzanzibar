@@ -99,21 +99,19 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex items-center gap-8 mt-14 pt-10 border-t border-white/10"
+              className="grid grid-cols-3 gap-4 sm:gap-8 mt-14 pt-10 border-t border-white/10"
             >
-              <div>
-                <p className="text-4xl font-extrabold text-white">50+</p>
-                <p className="text-white/50 text-sm font-medium">Tour Options</p>
+              <div className="text-center sm:text-left">
+                <p className="text-2xl sm:text-4xl font-extrabold text-white">50+</p>
+                <p className="text-white/50 text-xs sm:text-sm font-medium">Tour Options</p>
               </div>
-              <div className="w-px h-12 bg-white/20" />
-              <div>
-                <p className="text-4xl font-extrabold text-white">10+</p>
-                <p className="text-white/50 text-sm font-medium">Years Experience</p>
+              <div className="text-center sm:text-left border-l border-white/20 pl-4 sm:pl-8">
+                <p className="text-2xl sm:text-4xl font-extrabold text-white">10+</p>
+                <p className="text-white/50 text-xs sm:text-sm font-medium">Years Experience</p>
               </div>
-              <div className="w-px h-12 bg-white/20" />
-              <div>
-                <p className="text-4xl font-extrabold text-white">24/7</p>
-                <p className="text-white/50 text-sm font-medium">Support</p>
+              <div className="text-center sm:text-left border-l border-white/20 pl-4 sm:pl-8">
+                <p className="text-2xl sm:text-4xl font-extrabold text-white">24/7</p>
+                <p className="text-white/50 text-xs sm:text-sm font-medium">Support</p>
               </div>
             </motion.div>
           </div>
